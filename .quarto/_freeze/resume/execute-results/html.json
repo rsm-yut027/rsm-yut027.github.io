@@ -1,0 +1,15 @@
+{
+  "hash": "3548bca45d6d616504a87087b06c52f9",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Resume\"\n---\n\n{{< pdf resume/resume.pdf width=100% height=800 >}}\n\n\n::: {.cell}\n\n```{.r .cell-code}\n1 + 1\n```\n\n::: {.cell-output .cell-output-stdout}\n\n```\n[1] 2\n```\n\n\n:::\n:::\n\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}
