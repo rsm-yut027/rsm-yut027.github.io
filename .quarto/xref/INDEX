@@ -10,5 +10,11 @@
   },
   "resume/resume.qmd": {
     "resume.html": "26dfc476"
+  },
+  "blog/project1/index.qmd": {
+    "index.html": "bd195688"
+  },
+  "blog.qmd": {
+    "blog.html": "0275baec"
   }
 }

@@ -1,8 +1,8 @@
 {
-  "hash": "2b0d0335ccc31b8bbb1fea7f251d6658",
+  "hash": "3263346eabcc13f93b6a8629a5ac1824",
   "result": {
     "engine": "knitr",
-    "markdown": "---\ntitle: \"Yuzhi Tao\"\nimage: \"image/Yuzhi.JPG\"\nabout:\n  template: jolla\n  links:\n    - icon: envelope\n      href: yut027@ucsd.edu\n    - icon: linkedin\n      text: Github\n      href: https://www.linkedin.com/in/yuzhi-tao-yuzi0425\n---\n\nThis is a Quarto website.\n\nTo learn more about Quarto websites visit <https://quarto.org/docs/websites>.\n\n\n::: {.cell}\n\n```{.r .cell-code}\n1 + 1\n```\n\n::: {.cell-output .cell-output-stdout}\n\n```\n[1] 2\n```\n\n\n:::\n:::\n\n",
+    "markdown": "---\ntitle: \"Yuzhi Tao\"\nimage: \"image/Yuzhi.JPG\"\nabout:\n  template: jolla\n  links:\n    - icon: envelope\n      href: yut027@ucsd.edu\n    - icon: linkedin\n      text: Github\n      href: https://www.linkedin.com/in/yuzhi-tao-yuzi0425\n---\n\nThis is a Quarto website.\n\nTo learn more about Quarto websites visit <https://quarto.org/docs/websites>.\n\n\n::: {.cell}\n\n:::\n\n",
     "supporting": [],
     "filters": [
       "rmarkdown/pagebreak.lua"
