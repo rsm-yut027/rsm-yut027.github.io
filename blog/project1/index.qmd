@@ -25,6 +25,10 @@ This project seeks to replicate their results.
 ## Data
 
 ### Description
+This dataset includes donation behavior and treatment assignments from a large field experiment on charitable giving. It contains a rich set of variables covering match offers, donation history, demographics, and political/geographic characteristics.
+
+:::: {.callout-note collapse="true"}
+### Dataset Table
 
 ```{r}
 library(haven)
@@ -35,8 +39,7 @@ data <- read_dta("karlan_list_2007.dta")
 
 data
 ```
-
-
+::::
 
 :::: {.callout-note collapse="true"}
 ### Variable Definitions
@@ -102,7 +105,7 @@ data
 
 As an ad hoc test of the randomization mechanism, I provide a series of tests that compare aspects of the treatment and control groups to assess whether they are statistically significantly different from one another.
 
-
+Before analyzing the effects of the treatment, it’s important to confirm that the treatment and control groups were similar to begin with. To do this, I test whether key baseline characteristics differ between the groups. This ensures that any observed outcomes can be confidently attributed to the treatment itself.
 ```{r}
 treated <- filter(data, treatment == 1)
 control <- filter(data, treatment == 0)
@@ -178,6 +181,7 @@ This further supports the idea that randomization was effective, and that any la
 
 First, I analyze whether matched donations lead to an increased response rate of making a donation. 
 
+To begin exploring treatment effects, I compare the donation rate between the treatment and control groups. A simple barplot shows the proportion of people who donated in each group. This offers a quick visual sense of whether the matching offer may have had an impact.
 ```{r}
 donate_rate <- data %>%
   group_by(treatment) %>%
@@ -195,6 +199,7 @@ ggplot(donate_rate, aes(x = treatment, y = rate, fill = treatment)) +
 ```
 
 
+To formally test the difference in donation rates, I conduct both a t-test and a linear regression. These methods help quantify the effect of the match offer and determine if the observed difference is statistically significant. The goal is to confirm the patterns seen in the visual comparison.
 ```{r}
 # t-test using formula
 mean_gave_treat <- mean(treated$gave, na.rm = TRUE)
@@ -220,7 +225,6 @@ The t-test gave a t-statistic of 3.209462, and the linear regression returned a 
 
 Even though the percentage difference is small, it matters in large-scale fundraising. These results support the paper’s main point that even small tweaks in message framing, like offering a match, can make a meaningful difference in behavior.
 
-
 After examining donation amounts among those who gave, I return to the broader question: does simply offering a match influence whether people donate at all? This is the central behavioral claim in the study, and it is where the strongest treatment effects are observed.
 
 To answer this, I first compare donation rates between the treatment and control groups using a t-test and regression. I then estimate a probit model and calculate marginal effects to directly replicate the results shown in Table 3, Column 1 of the original paper.
@@ -243,6 +247,7 @@ This confirms the earlier conclusion. While the increase in giving is small in a
 
 Next, I assess the effectiveness of different sizes of matched donations on the response rate.
 
+Next, I examine whether larger match ratios lead to higher donation rates. I use a series of t-tests to compare 1:1, 2:1, and 3:1 match offers. This helps assess whether donors respond more strongly to larger matches.
 ```{r}
 # Subset data to just treated people with a match offer
 match_data <- data %>% filter(treatment == 1)
@@ -275,6 +280,7 @@ However, the t-tests show that these small increases are not statistically signi
 These results are consistent with the authors' interpretation in the paper. While matching offers increase giving overall, larger match ratios do not provide an additional boost. So although donors respond positively to the idea of a match, they don’t seem to care much about the size of the match that any match is enough to increase motivation.
 
 
+To further investigate this question, I run a regression with indicator variables for each match ratio. This allows me to compare the effectiveness of different match sizes within a unified framework. The omitted category serves as a baseline for interpreting relative differences.
 ```{r}
 # Create ratio1 dummy: 1 if ratio == 1, else 0
 data$ratio1 <- ifelse(data$ratio == 1, 1, 0)
@@ -291,6 +297,7 @@ In the regression output, the coefficient for ratio1 (1:1 match) is -0.002 and n
 The overall regression has an extremely low R-squared and a p-value of 0.52, confirming that differences in match size do not meaningfully explain variation in donation behavior. These results reinforce the key takeaway in the origional paper, that the presence of a match offer matters more than how large the match is.
 
 
+I then compare the response rate differences between match types both directly from the data and using fitted regression coefficients. This dual approach helps confirm the consistency of the findings. It also provides insight into whether larger match ratios meaningfully shift donor behavior.
 ```{r}
 mean_1_1 <- mean(group_1_1$gave, na.rm = TRUE)
 mean_2_1 <- mean(group_2_1$gave, na.rm = TRUE)
@@ -302,7 +309,6 @@ diff_3_1_vs_2_1 <- mean_3_1 - mean_2_1
 diff_2_1_vs_1_1
 diff_3_1_vs_2_1
 ```
-
 The differences in donation response rates between match ratios were assessed using both raw data and regression estimates. From the raw data, the difference between the 2:1 and 1:1 match ratios was about 0.19%, and between 3:1 and 2:1 was just 0.01%. Using the fitted coefficients from the regression, I got identical results that the size of the match ratio has very little impact on the likelihood of giving.
 
 These findings reinforce the main takeaway from the earlier analysis and the original paper. While offering a match increases donations, increasing the match ratio beyond 1:1 does not lead to meaningful gains. Donors appear to be influenced by the presence of a match itself but not its size.
@@ -312,6 +318,7 @@ These findings reinforce the main takeaway from the earlier analysis and the ori
 
 In this subsection, I analyze the effect of the size of matched donation on the size of the charitable contribution.
 
+Beyond participation rates, I also evaluate whether the match offer affects the amount donated. This analysis includes all individuals, even those who gave $0. A t-test and regression help determine if the match offer increased average donation size.
 ```{r}
 # Compare average donation amount (includes 0s for non-donors)
 mean_amount_treat <- mean(treated$amount, na.rm = TRUE)
