@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Yuzhi Tao">
-<meta name="dcterms.date" content="2025-04-23">
+<meta name="dcterms.date" content="2025-05-03">
 
 <title>A Replication of Karlan and List (2007) – Yuzhi Tao’s Website</title>
 <style>
@@ -197,7 +197,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">April 23, 2025</p>
+      <p class="date">May 3, 2025</p>
     </div>
   </div>
   
@@ -658,6 +658,7 @@ F-statistic: 0.0123 on 1 and 50081 DF,  p-value: 0.9117</code></pre>
 <section id="charitable-contribution-made" class="level3">
 <h3 class="anchored" data-anchor-id="charitable-contribution-made">Charitable Contribution Made</h3>
 <p>First, I analyze whether matched donations lead to an increased response rate of making a donation.</p>
+<p>To begin exploring treatment effects, I compare the donation rate between the treatment and control groups. A simple barplot shows the proportion of people who donated in each group. This offers a quick visual sense of whether the matching offer may have had an impact.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>donate_rate <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(treatment) <span class="sc">%&gt;%</span></span>
@@ -680,6 +681,7 @@ F-statistic: 0.0123 on 1 and 50081 DF,  p-value: 0.9117</code></pre>
 </div>
 </div>
 </div>
+<p>To formally test the difference in donation rates, I conduct both a t-test and a linear regression. These methods help quantify the effect of the match offer and determine if the observed difference is statistically significant. The goal is to confirm the patterns seen in the visual comparison.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># t-test using formula</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>mean_gave_treat <span class="ot">&lt;-</span> <span class="fu">mean</span>(treated<span class="sc">$</span>gave, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
@@ -748,6 +750,7 @@ F-statistic: 9.618 on 1 and 50081 DF,  p-value: 0.001927</code></pre>
 <section id="differences-between-match-rates" class="level3">
 <h3 class="anchored" data-anchor-id="differences-between-match-rates">Differences between Match Rates</h3>
 <p>Next, I assess the effectiveness of different sizes of matched donations on the response rate.</p>
+<p>Next, I examine whether larger match ratios lead to higher donation rates. I use a series of t-tests to compare 1:1, 2:1, and 3:1 match offers. This helps assess whether donors respond more strongly to larger matches.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Subset data to just treated people with a match offer</span></span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>match_data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(treatment <span class="sc">==</span> <span class="dv">1</span>)</span>
@@ -804,6 +807,7 @@ sample estimates:
 <p>I tested whether larger match ratios (2:1 and 3:1) were more effective than the 1:1 match at encouraging donations. The average donation rates were slightly higher in the higher match groups, showing: - 1:1 → 2.07% - 2:1 → 2.26% - 3:1 → 2.27%</p>
 <p>However, the t-tests show that these small increases are not statistically significant: - 2:1 vs 1:1: p = 0.33 - 3:1 vs 2:1: p = 0.96</p>
 <p>These results are consistent with the authors’ interpretation in the paper. While matching offers increase giving overall, larger match ratios do not provide an additional boost. So although donors respond positively to the idea of a match, they don’t seem to care much about the size of the match that any match is enough to increase motivation.</p>
+<p>To further investigate this question, I run a regression with indicator variables for each match ratio. This allows me to compare the effectiveness of different match sizes within a unified framework. The omitted category serves as a baseline for interpreting relative differences.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create ratio1 dummy: 1 if ratio == 1, else 0</span></span>
 <span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>ratio1 <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(data<span class="sc">$</span>ratio <span class="sc">==</span> <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
@@ -839,6 +843,7 @@ F-statistic: 0.6454 on 2 and 33393 DF,  p-value: 0.5245</code></pre>
 </div>
 <p>In the regression output, the coefficient for ratio1 (1:1 match) is -0.002 and not statistically significant (p = 0.313), and the coefficient for ratio2 (2:1 match) is even smaller at -0.0001, with a p-value of 0.959. The variable ratio3 (3:1) was dropped due to perfect multicollinearity, which is expected since only two indicators are needed to define a three-level categorical variable.</p>
 <p>The overall regression has an extremely low R-squared and a p-value of 0.52, confirming that differences in match size do not meaningfully explain variation in donation behavior. These results reinforce the key takeaway in the origional paper, that the presence of a match offer matters more than how large the match is.</p>
+<p>I then compare the response rate differences between match types both directly from the data and using fitted regression coefficients. This dual approach helps confirm the consistency of the findings. It also provides insight into whether larger match ratios meaningfully shift donor behavior.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>mean_1_1 <span class="ot">&lt;-</span> <span class="fu">mean</span>(group_1_1<span class="sc">$</span>gave, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>mean_2_1 <span class="ot">&lt;-</span> <span class="fu">mean</span>(group_2_1<span class="sc">$</span>gave, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
@@ -862,6 +867,7 @@ F-statistic: 0.6454 on 2 and 33393 DF,  p-value: 0.5245</code></pre>
 <section id="size-of-charitable-contribution" class="level3">
 <h3 class="anchored" data-anchor-id="size-of-charitable-contribution">Size of Charitable Contribution</h3>
 <p>In this subsection, I analyze the effect of the size of matched donation on the size of the charitable contribution.</p>
+<p>Beyond participation rates, I also evaluate whether the match offer affects the amount donated. This analysis includes all individuals, even those who gave $0. A t-test and regression help determine if the match offer increased average donation size.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare average donation amount (includes 0s for non-donors)</span></span>
 <span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>mean_amount_treat <span class="ot">&lt;-</span> <span class="fu">mean</span>(treated<span class="sc">$</span>amount, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
